@@ -15,6 +15,8 @@ class ConnectionManager:
         for connection in self.active_connections:
             if connection != sender:
                 await connection.send_json(message)
+            else:
+                await connection.send_json({"data": message, "from_sender": True})
     
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)

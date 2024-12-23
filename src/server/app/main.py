@@ -1,6 +1,5 @@
 from fastapi import FastAPI, WebSocket
 from app.connection_manager import ConnectionManager
-import json
 class AppCreator:
     def __init__(self):
         self.app = FastAPI()
@@ -15,6 +14,7 @@ async def websocket_endpoint(websocket:WebSocket):
     try:
         while True:
             data = await websocket.receive_json()
-            await manager.broadcast(data, websocket)
+            message = {"data": data, "from_sender": False}
+            await manager.broadcast(message, websocket)
     except:
         manager.disconnect(websocket)

@@ -21,6 +21,7 @@ const dragDropState = atom({
   key: "dragDropState",
   default: {} as DropResult,
 });
+
 const DragDrop: React.FunctionComponent = () => {
   const [data, setData] = useRecoilState(dataState);
   const [dragState, setDragState] = useRecoilState(dragDropState);
@@ -28,26 +29,35 @@ const DragDrop: React.FunctionComponent = () => {
 
   useEffect(() => {
     const ws = new WebSocket(WS_URL);
-    ws.onmessage = (event) => {
-      console.log(JSON.parse(event.data));
-      setData(JSON.parse(event.data));
-    };
-
     ws.onclose = () => {
       console.log("WebSocket connection closed");
     };
-
     setSocket(ws);
-
     return () => {
       ws.close();
     };
   }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (!message.from_sender) {
+          const updatedData = message.data;
+          if (JSON.stringify(updatedData) !== JSON.stringify(data)) {
+            setData(updatedData);
+          }
+        }
+      };
+    }
+  }, [socket, data]);
+
   useEffect(() => {
     if (socket) {
       socket.send(JSON.stringify(data));
     }
   }, [data]);
+
   const handleDragStart = (
     event: React.DragEvent,
     source: DraggableLocation,
