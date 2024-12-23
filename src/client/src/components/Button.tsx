@@ -2,7 +2,7 @@ import { ButtonType } from "../constants";
 import { FunctionComponent } from "react";
 type config = {
   type: ButtonType;
-  content: string;
+  content?: string;
   img?: string;
 };
 
@@ -19,6 +19,12 @@ const Button: FunctionComponent<config> = ({ type, content, img }: config) => {
       );
     case ButtonType.Danger:
       return <button>{content}</button>;
+    case ButtonType.Image:
+      return (
+        <button className="hover:bg-btn-hover hover:rounded-md p-1">
+          <img className="w-img-lg" src={img} alt="" />
+        </button>
+      );
     default:
       return <></>;
   }

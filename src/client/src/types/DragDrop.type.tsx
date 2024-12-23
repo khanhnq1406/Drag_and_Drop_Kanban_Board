@@ -1,10 +1,18 @@
+export type ContentType = {
+  summary: string;
+  description: string;
+  assignee: string;
+};
+
 export type TaskType = {
-  id: string;
-  content: string;
+  id: number;
+  index: number;
+  content: ContentType;
 };
 
 export type ColumnType = {
-  id: string;
+  id: number;
+  index: number;
   title: string;
   tasks: TaskType[];
 };
@@ -19,9 +27,9 @@ export interface DraggableLocation {
 }
 
 export type DropResult = {
-  destination: DraggableLocation;
-  source: DraggableLocation;
-  draggableId: number;
+  destination?: DraggableLocation;
+  source?: DraggableLocation;
+  draggableId?: number;
 };
 
 export type handleDragEnd = (result: DropResult) => void;

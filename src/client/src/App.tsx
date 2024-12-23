@@ -6,7 +6,7 @@ import DragDrop from "./components/DragDrop";
 function App() {
   return (
     <RecoilRoot>
-      <div className="m-3">
+      <div className="p-3 h-full">
         <Navbar />
         <DragDrop />
       </div>

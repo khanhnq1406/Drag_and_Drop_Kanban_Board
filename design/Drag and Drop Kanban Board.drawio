@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" version="25.0.3" pages="2">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/25.0.1 Chrome/128.0.6613.186 Electron/32.2.6 Safari/537.36" version="25.0.1" pages="3">
   <diagram name="Architecture" id="mpwsE6aWvqgUhCIAoAwH">
     <mxGraphModel dx="722" dy="417" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -89,6 +89,102 @@
         </mxCell>
         <mxCell id="NvE2DX-o_lfoTFulfMce-6" value="Assignee&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;VARCHAR(100)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="NvE2DX-o_lfoTFulfMce-1">
           <mxGeometry y="150" width="210" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="iyDRTLOZBefDro9vVRl5" name="Drag and Drop Context">
+    <mxGraphModel dx="989" dy="577" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="PK7KxGZREXqn6-c05FwM-1" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="180" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-4" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dropable &lt;span style=&quot;font-weight: normal;&quot;&gt;{dropableId}&lt;/span&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="60" y="40" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-7" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dragable&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Comic Sans MS&quot;&gt;{dragableId}&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="60" y="90" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-9" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dragable&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Comic Sans MS&quot;&gt;{dragableId}&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="60" y="160" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-10" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dragable&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Comic Sans MS&quot;&gt;{dragableId}&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="60" y="230" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-22" value="&lt;font style=&quot;font-weight: normal;&quot; face=&quot;Comic Sans MS&quot;&gt;index&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="180" y="100" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-23" value="&lt;font style=&quot;font-weight: normal;&quot; face=&quot;Comic Sans MS&quot;&gt;index&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="180" y="170" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-24" value="&lt;font style=&quot;font-weight: normal;&quot; face=&quot;Comic Sans MS&quot;&gt;index&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="180" y="240" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-25" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="280" y="40" width="180" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-26" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dropable &lt;span style=&quot;font-weight: normal;&quot;&gt;{dropableId}&lt;/span&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="300" y="40" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-27" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dragable&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Comic Sans MS&quot;&gt;{dragableId}&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="300" y="90" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-28" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dragable&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Comic Sans MS&quot;&gt;{dragableId}&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="300" y="160" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-29" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dragable&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Comic Sans MS&quot;&gt;{dragableId}&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="300" y="230" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-30" value="&lt;font style=&quot;font-weight: normal;&quot; face=&quot;Comic Sans MS&quot;&gt;index&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="420" y="100" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-31" value="&lt;font style=&quot;font-weight: normal;&quot; face=&quot;Comic Sans MS&quot;&gt;index&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="420" y="170" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-32" value="&lt;font style=&quot;font-weight: normal;&quot; face=&quot;Comic Sans MS&quot;&gt;index&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="420" y="240" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-33" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="520" y="40" width="180" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-34" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dropable &lt;span style=&quot;font-weight: normal;&quot;&gt;{dropableId}&lt;/span&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="540" y="40" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-35" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dragable&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Comic Sans MS&quot;&gt;{dragableId}&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="540" y="90" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-36" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dragable&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Comic Sans MS&quot;&gt;{dragableId}&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="540" y="160" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-37" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;Dragable&lt;/font&gt;&lt;div&gt;&lt;font face=&quot;Comic Sans MS&quot;&gt;{dragableId}&lt;/font&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="540" y="230" width="120" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-38" value="&lt;font style=&quot;font-weight: normal;&quot; face=&quot;Comic Sans MS&quot;&gt;index&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="660" y="100" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-39" value="&lt;font style=&quot;font-weight: normal;&quot; face=&quot;Comic Sans MS&quot;&gt;index&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="660" y="170" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-40" value="&lt;font style=&quot;font-weight: normal;&quot; face=&quot;Comic Sans MS&quot;&gt;index&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="660" y="240" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-44" value="" style="endArrow=classic;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="PK7KxGZREXqn6-c05FwM-10" target="PK7KxGZREXqn6-c05FwM-29">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="130" y="410" as="sourcePoint" />
+            <mxPoint x="180" y="360" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="120" y="330" />
+              <mxPoint x="360" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-45" value="&lt;font style=&quot;font-weight: normal;&quot; face=&quot;Comic Sans MS&quot;&gt;source&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="90" y="300" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PK7KxGZREXqn6-c05FwM-46" value="&lt;font face=&quot;Comic Sans MS&quot;&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;destination&lt;/span&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="360" y="300" width="40" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

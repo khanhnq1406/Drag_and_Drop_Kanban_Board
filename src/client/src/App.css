@@ -6,4 +6,18 @@
   --warning: #c9372c;
   --text: #292a2e;
   --text-sub: #505258;
+  --btn-hover: #e2e2e4;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
 }

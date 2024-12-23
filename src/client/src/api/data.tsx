@@ -1,30 +1,64 @@
-const initialData = {
-  tasks: {
-    "task-1": { id: "task-1", content: "Escape from Arkham" },
-    "task-2": { id: "task-2", content: "Free Harley Quinn" },
-    "task-3": { id: "task-3", content: "Hire Poison Ivy" },
-    "task-4": { id: "task-4", content: "Hire Bane" },
-    "task-5": { id: "task-5", content: "Kill Batman" },
-    "task-6": { id: "task-6", content: "Rule Gotham City" },
-  },
-  columns: {
-    "column-1": {
-      id: "column-1",
-      title: "Todo",
-      taskIds: ["task-1", "task-2", "task-3", "task-4", "task-5"],
+import { TaskBoardType } from "../types/DragDrop.type";
+
+const initialData: TaskBoardType = {
+  columns: [
+    {
+      id: 1,
+      index: 0,
+      title: "To-do",
+      tasks: [
+        {
+          id: 1,
+          index: 0,
+          content: {
+            summary: "This is summary",
+            description: "This is description",
+            assignee: "Assignee Name",
+          },
+        },
+        {
+          id: 4,
+          index: 2,
+          content: {
+            summary: "This is summary",
+            description: "This is description",
+            assignee: "Assignee Name",
+          },
+        },
+      ],
     },
-    "column-2": {
-      id: "column-2",
-      title: "Doing",
-      taskIds: [],
+    {
+      id: 2,
+      index: 1,
+      title: "In progress",
+      tasks: [
+        {
+          id: 2,
+          index: 0,
+          content: {
+            summary: "This is summary",
+            description: "This is description",
+            assignee: "Assignee Name",
+          },
+        },
+        {
+          id: 3,
+          index: 1,
+          content: {
+            summary: "This is summary",
+            description: "This is description",
+            assignee: "Assignee Name",
+          },
+        },
+      ],
     },
-    "column-3": {
-      id: "column-3",
+    {
+      id: 3,
+      index: 2,
       title: "Done",
-      taskIds: [],
+      tasks: [],
     },
-  },
-  columnOrder: ["column-1", "column-2", "column-3"],
+  ],
 };
 
 export default initialData;
