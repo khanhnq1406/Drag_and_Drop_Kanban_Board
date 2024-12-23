@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import initialData from "../api/data";
 import { atom, useRecoilState } from "recoil";
 import { DraggableLocation, DropResult } from "../types/DragDrop.type";
 import Button from "./Button";
-import { ButtonType } from "../constants";
+import { ButtonType, WS_URL } from "../constants";
 import { TaskBoardType } from "../types/DragDrop.type";
 import {
   AddDragEffect,
@@ -12,7 +12,6 @@ import {
   RemoveLastElementEffect,
 } from "../styles/DragEffect";
 import { reorder } from "../utils/reorder";
-
 const dataState = atom({
   key: "dataState",
   default: initialData as TaskBoardType,
@@ -22,11 +21,33 @@ const dragDropState = atom({
   key: "dragDropState",
   default: {} as DropResult,
 });
-
 const DragDrop: React.FunctionComponent = () => {
   const [data, setData] = useRecoilState(dataState);
   const [dragState, setDragState] = useRecoilState(dragDropState);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
 
+  useEffect(() => {
+    const ws = new WebSocket(WS_URL);
+    ws.onmessage = (event) => {
+      console.log(JSON.parse(event.data));
+      setData(JSON.parse(event.data));
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    setSocket(ws);
+
+    return () => {
+      ws.close();
+    };
+  }, []);
+  useEffect(() => {
+    if (socket) {
+      socket.send(JSON.stringify(data));
+    }
+  }, [data]);
   const handleDragStart = (
     event: React.DragEvent,
     source: DraggableLocation,

@@ -1,20 +1,20 @@
 version: "3.7"
 
 services:
-  # server:
-  #   build:
-  #     context: ./server
-  #     dockerfile: Dockerfile
-  #   image: kanban-board-server
-  #   container_name: kanban-board-server
-  #   command: /app/.venv/bin/fastapi run app/main.py --port 5000 --host 0.0.0.0 --reload
-  #   volumes:
-  #     - ./server/:/app
-  #     - /app/.venv # anonymous volume for .venv to prevent conflicts between host and container dependencies.
-  #   ports:
-  #     - "5000:5000"
-  #   networks:
-  #     - app-network
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: kanban-board-server
+    container_name: kanban-board-server
+    command: /app/.venv/bin/fastapi run app/main.py --port 5000 --host 0.0.0.0 --reload
+    volumes:
+      - ./server/:/app
+      - /app/.venv # anonymous volume for .venv to prevent conflicts between host and container dependencies.
+    ports:
+      - "5000:5000"
+    networks:
+      - app-network
   client:
     build:
       context: ./client
