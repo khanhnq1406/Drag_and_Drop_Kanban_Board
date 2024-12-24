@@ -3,7 +3,7 @@ name = "server"
 version = "0.1.0"
 description = "Drag and Drop Kanban Board server"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
     "fastapi[standard]>=0.115.6",
     "websocket>=0.2.1",

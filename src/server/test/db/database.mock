@@ -1,0 +1,10 @@
+// Status
+self.database.create_status(Status(None,None,"To Do"))
+self.database.create_status(Status(None,None,"In Progress"))
+self.database.create_status(Status(None,None,"Done"))
+
+// Tasks
+self.database.create_task(Tasks(None,1,None,"This is summary", "This is description", "Kane"))
+self.database.create_task(Tasks(None,2,None,"This is summary", "This is description", "Kane"))
+self.database.create_task(Tasks(None,2,None,"This is summary", "This is description", "Kane"))
+self.database.create_task(Tasks(None,3,None,"This is summary", "This is description", "Kane"))
