@@ -3,7 +3,7 @@ import initialData from "../api/data";
 import { atom, useRecoilState } from "recoil";
 import { DraggableLocation, DropResult } from "../types/DragDrop.type";
 import Button from "./Button";
-import { ButtonType, WS_URL } from "../constants";
+import { ButtonType, RecoilKey, WS_URL } from "../constants";
 import { TaskBoardType } from "../types/DragDrop.type";
 import {
   AddDragEffect,
@@ -13,12 +13,12 @@ import {
 } from "../styles/DragEffect";
 import { reorder } from "../utils/reorder";
 const dataState = atom({
-  key: "dataState",
+  key: RecoilKey.DataState,
   default: initialData as TaskBoardType,
 });
 
 const dragDropState = atom({
-  key: "dragDropState",
+  key: RecoilKey.DragDropState,
   default: {} as DropResult,
 });
 
@@ -26,7 +26,6 @@ const DragDrop: React.FunctionComponent = () => {
   const [data, setData] = useRecoilState(dataState);
   const [dragState, setDragState] = useRecoilState(dragDropState);
   const [socket, setSocket] = useState<WebSocket | null>(null);
-
   useEffect(() => {
     const ws = new WebSocket(WS_URL);
     ws.onclose = () => {
@@ -196,7 +195,7 @@ const DragDrop: React.FunctionComponent = () => {
 
   return (
     <>
-      <div className="flex gap-5 items-stretch ">
+      <div className="flex gap-5 items-stretch">
         {data.columns.map((column, index) => (
           <div
             key={index}

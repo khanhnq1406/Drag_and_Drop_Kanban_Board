@@ -5,7 +5,7 @@ module.exports = {
     extend: {
       width: {
         img: "15px",
-        "img-lg": "20px",
+        "img-lg": "18px",
       },
       colors: {
         btnPrimary: "var(--button-blue)",
@@ -14,6 +14,7 @@ module.exports = {
         column: "var(--status-column)",
         sub: "var(--text-sub)",
         "btn-hover": "var(--btn-hover)",
+        "black-layer": "var(--black-layer)",
       },
     },
   },
