@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import initialData from "../api/data";
 import { atom, useRecoilState } from "recoil";
 import { DraggableLocation, DropResult } from "../types/DragDrop.type";
 import Button from "./Button";
-import { API_URL, ButtonType, RecoilKey, SendType, WS_URL } from "../constants";
+import { ButtonType, RecoilKey, SendType, WS_URL } from "../constants";
 import { TaskBoardType } from "../types/DragDrop.type";
 import {
   AddDragEffect,
@@ -12,10 +11,8 @@ import {
   RemoveLastElementEffect,
 } from "../styles/DragEffect";
 import { reorder } from "../utils/reorder";
-import { SendData } from "../types/SendData.type";
 import { Initial } from "../api/initial";
-import userEvent from "@testing-library/user-event";
-const dataState = atom({
+export const dataState = atom({
   key: RecoilKey.DataState,
   default: {} as TaskBoardType,
 });
@@ -24,22 +21,25 @@ const dragDropState = atom({
   key: RecoilKey.DragDropState,
   default: {} as DropResult,
 });
-
+export const websocketState = atom<WebSocket>({
+  key: RecoilKey.WebSocketState,
+  default: new WebSocket(WS_URL),
+});
 const DragDrop: React.FunctionComponent = () => {
   const [data, setData] = useRecoilState(dataState);
   const [dragState, setDragState] = useRecoilState(dragDropState);
-  const [socket, setSocket] = useState<WebSocket | null>(null);
-
-  useEffect(() => {
-    const ws = new WebSocket(WS_URL);
-    setSocket(ws);
-    ws.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
-    ws.onopen = () => {
-      console.log("WebSocket connection opened");
-    };
-  }, []);
+  // const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [socket, setSocket] = useRecoilState(websocketState);
+  // useEffect(() => {
+  //   const ws = new WebSocket(WS_URL);
+  //   setSocket(ws);
+  //   ws.onclose = () => {
+  //     console.log("WebSocket connection closed");
+  //   };
+  //   ws.onopen = () => {
+  //     console.log("WebSocket connection opened");
+  //   };
+  // }, []);
 
   useEffect(() => {
     Initial().then((data) => {
@@ -54,8 +54,41 @@ const DragDrop: React.FunctionComponent = () => {
         console.log(message);
         if (!message.from_sender) {
           const updatedData = message.data;
-          if (JSON.stringify(updatedData) !== JSON.stringify(data)) {
-            setData(updatedData);
+          if (message.type === SendType.Update) {
+            if (JSON.stringify(updatedData) !== JSON.stringify(data)) {
+              setData(updatedData);
+            }
+          }
+          if (Number(message.type) === Number(SendType.Create)) {
+            var index = data.columns
+              .map(function (o) {
+                return o.id;
+              })
+              .indexOf(Number(updatedData.status));
+
+            const updateData = { ...data };
+            updateData.columns = updateData.columns.map((column) => {
+              if (Number(column.index) === Number(index)) {
+                return {
+                  ...column,
+                  tasks: [
+                    ...column.tasks,
+                    {
+                      id: updatedData.id,
+                      index: updatedData.index,
+                      content: {
+                        assignee: updatedData.assignee,
+                        description: updatedData.description,
+                        summary: updatedData.summary,
+                      },
+                    },
+                  ],
+                };
+              }
+              return column;
+            });
+
+            setData(updateData);
           }
         }
       };
@@ -63,7 +96,7 @@ const DragDrop: React.FunctionComponent = () => {
   }, [socket, data]);
 
   useEffect(() => {
-    if (socket) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({ type: SendType.Update, data: data }));
     }
   }, [data]);

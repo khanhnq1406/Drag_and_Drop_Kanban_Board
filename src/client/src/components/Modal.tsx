@@ -3,6 +3,7 @@ import { ButtonType, OnClickType, RecoilKey } from "../constants";
 import Button from "./Button";
 import { atom, useRecoilState } from "recoil";
 import { ModalConfig } from "../types/ModalConfig";
+import { dataState } from "./DragDrop";
 
 export const inputState = atom({
   key: RecoilKey.InputState,
@@ -13,18 +14,19 @@ export const Modal = ({
   type,
   status,
   summary,
-  descripton,
+  description,
   assignee,
   onClickEvent,
 }: ModalConfig) => {
   const [input, setInput] = useRecoilState(inputState);
+  const [data] = useRecoilState(dataState);
   useEffect(() => {
     setInput((prevInput) => ({
       ...prevInput,
       type: type,
-      status: status || prevInput.status || "To Do",
+      status: status || prevInput.status || String(data.columns[0].id),
       summary: summary || prevInput.summary || "",
-      descripton: descripton || prevInput.descripton || "",
+      description: description || prevInput.description || "",
       assignee: assignee || prevInput.assignee || "",
       onClickEvent,
     }));
@@ -51,20 +53,24 @@ export const Modal = ({
         <hr className="w-full h-1 bg-column border-none rounded my-3" />
         <form className="flex flex-wrap gap-2">
           <label className="w-full text-sub font-semibold">Status</label>
+
           <select
             value={input.status || ""}
             onChange={(e) =>
-              setInput((prevInput) => ({
-                ...prevInput,
-                status: e.target.value,
-              }))
+              setInput((prevInput) => {
+                console.log(e.target.value);
+                return {
+                  ...prevInput,
+                  status: e.target.value,
+                };
+              })
             }
             className="bg-column rounded p-1"
             name="status"
           >
-            <option value="To Do">To Do</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Done">Done</option>
+            {data.columns.map((column) => {
+              return <option value={column.id}>{column.title}</option>;
+            })}
           </select>
           <div className="text-xs w-full">
             This is the initial status once created.
@@ -89,11 +95,11 @@ export const Modal = ({
             onChange={(e) =>
               setInput((prevInput) => ({
                 ...prevInput,
-                descripton: e.target.value,
+                description: e.target.value,
               }))
             }
-            name="descripton"
-            value={input.descripton || ""}
+            name="description"
+            value={input.description || ""}
             className="border border-black rounded-md p-2 w-full"
           ></textarea>
 

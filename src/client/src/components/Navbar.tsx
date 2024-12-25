@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Button from "./Button";
-import { ButtonType, ModalType, OnClickType } from "../constants";
+import { ButtonType, ModalType, OnClickType, SendType } from "../constants";
 import { useRecoilState } from "recoil";
 import { inputState, Modal } from "./Modal";
 import { ModalConfig } from "../types/ModalConfig";
 import { MinimizeModal } from "./MinimizeModal";
+import { websocketState } from "./DragDrop";
 
 const Navbar: React.FunctionComponent = () => {
   const [input, setInput] = useRecoilState(inputState);
+  const [socket] = useRecoilState(websocketState);
   const [modal, setModal] = useState(<></>);
 
   const handleCreateEvent = (event: React.MouseEvent, type: OnClickType) => {
@@ -16,6 +18,11 @@ const Navbar: React.FunctionComponent = () => {
       case OnClickType.Create:
         setInput((prevInput) => {
           // TODO: Send data to backend here
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(
+              JSON.stringify({ type: SendType.Create, data: prevInput })
+            );
+          }
           console.log("Send input:", prevInput);
           return prevInput;
         });

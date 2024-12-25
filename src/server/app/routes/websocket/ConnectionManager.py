@@ -17,6 +17,10 @@ class ConnectionManager:
                 await connection.send_json(message)
             else:
                 await connection.send_json({"data": message, "from_sender": True})
+
+    async def broadcast_all(self, message):
+        for connection in self.active_connections:
+            await connection.send_json( message )
     
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)

@@ -4,7 +4,7 @@ export type ModalConfig = {
   type: ModalType;
   status?: string;
   summary?: string;
-  descripton?: string;
+  description?: string;
   assignee?: string;
   onClickEvent: (
     event: React.MouseEvent<HTMLButtonElement>,

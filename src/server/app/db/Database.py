@@ -6,6 +6,7 @@ DB_NAME = "board.db"
 
 class Database():
     def __init__(self):
+        print("Ininit")
         self.conn = sqlite3.connect(DB_NAME)
         self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
@@ -44,19 +45,27 @@ class Database():
         self.conn.commit()
 
     def create_task(self, task: Tasks):
-        index = len(self.cursor.execute(
-            "SELECT * FROM tasks WHERE status_id = ?", (str(task.status_id))).fetchall())
-        self.cursor.execute(
-            '''INSERT INTO tasks (
-            status_id, 
-            task_index, 
-            summary, 
-            description, 
-            assignee) VALUES
-            (?, ?, ?, ?, ?)''',
-            (task.status_id, index, task.summary, task.description, task.assignee)
-        )
-        self.conn.commit()
+        try:
+            index = len(self.cursor.execute(
+                "SELECT * FROM tasks WHERE status_id = ?", (task.status_id,)).fetchall())
+
+            self.cursor.execute(
+                '''INSERT INTO tasks (
+                status_id, 
+                task_index, 
+                summary, 
+                description, 
+                assignee) VALUES
+                (?, ?, ?, ?, ?)''',
+                (task.status_id, index, task.summary, task.description, task.assignee)
+            )
+            task_id = self.cursor.lastrowid
+            self.conn.commit()
+            return {"index": index, "id": task_id}
+        except sqlite3.Error as e:
+            print(f"Database error during create_task: {e}")
+        except Exception as e:
+            print(f"Unexpected error during create_task: {e}")
 
     def get(self):
         status = self.cursor.execute('''
@@ -70,6 +79,5 @@ class Database():
         ''').fetchall()
         status_result = [dict(row) for row in status]
         tasks_result = [dict(row) for row in tasks]
-        # tasks = self.cursor.execute("SELECT * FROM tasks").fetchall()
         return {"data": {"status":status_result, "tasks" : tasks_result}}
         

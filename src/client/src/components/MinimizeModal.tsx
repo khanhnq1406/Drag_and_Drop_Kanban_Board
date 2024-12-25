@@ -25,7 +25,7 @@ export const MinimizeModal = ({
       }}
     >
       <div className="bg-surface h-fit rounded-lg px-10 py-3 flex fixed bottom-0 right-0 justify-center content-center flex-wrap hover:bg-column drop-shadow-xl  m-5 border-2 border-column">
-        {summary}
+        {summary !== "" ? summary : "New task"}
       </div>
     </div>
   );

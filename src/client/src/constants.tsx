@@ -22,6 +22,7 @@ export enum RecoilKey {
   DragDropState = "DragDropState",
   DataState = "DataState",
   InputState = "InputState",
+  WebSocketState = "WebSocketState",
 }
 
 export enum SendType {
