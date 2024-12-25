@@ -1,4 +1,5 @@
 import sqlite3
+import json
 from app.models.Status import Status
 from app.models.Tasks import Tasks
 DB_NAME = "board.db"
@@ -6,6 +7,7 @@ DB_NAME = "board.db"
 class Database():
     def __init__(self):
         self.conn = sqlite3.connect(DB_NAME)
+        self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
         self.create_table()
 
@@ -13,7 +15,7 @@ class Database():
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS status (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        table_index INT,
+        status_index INT,
         title TEXT
         )
         ''')
@@ -36,7 +38,7 @@ class Database():
         index = len(self.cursor.execute(
             "SELECT * FROM status").fetchall())
         self.cursor.execute(
-        "INSERT INTO status (table_index, title) VALUES (?, ?)", 
+        "INSERT INTO status (status_index, title) VALUES (?, ?)", 
         (index, status.title)
         )
         self.conn.commit()
@@ -55,4 +57,19 @@ class Database():
             (task.status_id, index, task.summary, task.description, task.assignee)
         )
         self.conn.commit()
+
+    def get(self):
+        status = self.cursor.execute('''
+                    SELECT * FROM status
+                    ORDER BY status_index
+                ''').fetchall()
+
+        tasks = self.cursor.execute('''
+            SELECT * FROM tasks
+            ORDER BY status_id
+        ''').fetchall()
+        status_result = [dict(row) for row in status]
+        tasks_result = [dict(row) for row in tasks]
+        # tasks = self.cursor.execute("SELECT * FROM tasks").fetchall()
+        return {"data": {"status":status_result, "tasks" : tasks_result}}
         

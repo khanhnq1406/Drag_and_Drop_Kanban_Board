@@ -3,7 +3,7 @@ import initialData from "../api/data";
 import { atom, useRecoilState } from "recoil";
 import { DraggableLocation, DropResult } from "../types/DragDrop.type";
 import Button from "./Button";
-import { ButtonType, RecoilKey, WS_URL } from "../constants";
+import { API_URL, ButtonType, RecoilKey, SendType, WS_URL } from "../constants";
 import { TaskBoardType } from "../types/DragDrop.type";
 import {
   AddDragEffect,
@@ -12,9 +12,12 @@ import {
   RemoveLastElementEffect,
 } from "../styles/DragEffect";
 import { reorder } from "../utils/reorder";
+import { SendData } from "../types/SendData.type";
+import { Initial } from "../api/initial";
+import userEvent from "@testing-library/user-event";
 const dataState = atom({
   key: RecoilKey.DataState,
-  default: initialData as TaskBoardType,
+  default: {} as TaskBoardType,
 });
 
 const dragDropState = atom({
@@ -26,21 +29,29 @@ const DragDrop: React.FunctionComponent = () => {
   const [data, setData] = useRecoilState(dataState);
   const [dragState, setDragState] = useRecoilState(dragDropState);
   const [socket, setSocket] = useState<WebSocket | null>(null);
+
   useEffect(() => {
     const ws = new WebSocket(WS_URL);
+    setSocket(ws);
     ws.onclose = () => {
       console.log("WebSocket connection closed");
     };
-    setSocket(ws);
-    return () => {
-      ws.close();
+    ws.onopen = () => {
+      console.log("WebSocket connection opened");
     };
+  }, []);
+
+  useEffect(() => {
+    Initial().then((data) => {
+      setData(data);
+    });
   }, []);
 
   useEffect(() => {
     if (socket) {
       socket.onmessage = (event) => {
         const message = JSON.parse(event.data);
+        console.log(message);
         if (!message.from_sender) {
           const updatedData = message.data;
           if (JSON.stringify(updatedData) !== JSON.stringify(data)) {
@@ -53,7 +64,7 @@ const DragDrop: React.FunctionComponent = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.send(JSON.stringify(data));
+      socket.send(JSON.stringify({ type: SendType.Update, data: data }));
     }
   }, [data]);
 
@@ -103,14 +114,6 @@ const DragDrop: React.FunctionComponent = () => {
 
   const handleDragEnd = (event: React.DragEvent) => {
     const { destination, source, draggableId } = dragState;
-    console.log(
-      "source:",
-      source,
-      "destination:",
-      destination,
-      "draggableId: ",
-      draggableId
-    );
 
     if (!source) {
       return;
@@ -196,62 +199,66 @@ const DragDrop: React.FunctionComponent = () => {
   return (
     <>
       <div className="flex gap-5 items-stretch">
-        {data.columns.map((column, index) => (
-          <div
-            key={index}
-            className="h-full bg-column p-2 rounded-lg flex-1 min-w-[250px]"
-          >
-            <div className="text-sub font-semibold">{column.title}</div>
-            {column.tasks.map((task, index) => (
-              <div
-                draggable="true"
-                onDragStart={(e) =>
-                  handleDragStart(
-                    e,
-                    {
+        {data.columns !== undefined ? (
+          data.columns.map((column, index) => (
+            <div
+              key={index}
+              className="h-full bg-column p-2 rounded-lg flex-1 min-w-[250px]"
+            >
+              <div className="text-sub font-semibold">{column.title}</div>
+              {column.tasks.map((task, index) => (
+                <div
+                  draggable="true"
+                  onDragStart={(e) =>
+                    handleDragStart(
+                      e,
+                      {
+                        droppableId: column.id,
+                        index: column.tasks.indexOf(task),
+                      },
+                      task.id
+                    )
+                  }
+                  onDragEnd={handleDragEnd}
+                  onDrop={(e) =>
+                    handleOnDrop(e, {
                       droppableId: column.id,
-                      index: column.tasks.indexOf(task),
-                    },
-                    task.id
-                  )
-                }
-                onDragEnd={handleDragEnd}
+                      index: index,
+                    })
+                  }
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragLeave={(e) => handleDragLeave(e, index)}
+                  className="bg-surface rounded-md p-4 flex justify-between m-4 border-t-0 border-t-btnPrimary"
+                >
+                  <div>
+                    <p>{task.content.summary}</p>
+                    <p className="text-sm">{task.content.assignee}</p>
+                    <p>ID-{task.id}</p>
+                    <p>{index}</p>
+                  </div>
+                  <div className="">
+                    <Button type={ButtonType.Image} img="edit.png" />
+                    <Button type={ButtonType.Image} img="delete.png" />
+                  </div>
+                </div>
+              ))}
+              {/* Handle drop at the end of the column */}
+              <div
+                className="h-[20px] bg-[#e0e0e0] border-dashed border-[#aaa] border-[1px] m-4"
                 onDrop={(e) =>
                   handleOnDrop(e, {
                     droppableId: column.id,
-                    index: index,
+                    index: -1,
                   })
                 }
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDragLeave={(e) => handleDragLeave(e, index)}
-                className="bg-surface rounded-md p-4 flex justify-between m-4 border-t-0 border-t-btnPrimary"
-              >
-                <div>
-                  <p>{task.content.summary}</p>
-                  <p className="text-sm">{task.content.assignee}</p>
-                  <p>ID-{task.id}</p>
-                  <p>{index}</p>
-                </div>
-                <div className="">
-                  <Button type={ButtonType.Image} img="edit.png" />
-                  <Button type={ButtonType.Image} img="delete.png" />
-                </div>
-              </div>
-            ))}
-            {/* Handle drop at the end of the column */}
-            <div
-              className="h-[20px] bg-[#e0e0e0] border-dashed border-[#aaa] border-[1px] m-4"
-              onDrop={(e) =>
-                handleOnDrop(e, {
-                  droppableId: column.id,
-                  index: -1,
-                })
-              }
-              onDragOver={(e) => handleDragOver(e, -1)}
-              onDragLeave={(e) => handleDragLeave(e, -1)}
-            ></div>
-          </div>
-        ))}
+                onDragOver={(e) => handleDragOver(e, -1)}
+                onDragLeave={(e) => handleDragLeave(e, -1)}
+              ></div>
+            </div>
+          ))
+        ) : (
+          <div>Loading</div>
+        )}
       </div>
     </>
   );
