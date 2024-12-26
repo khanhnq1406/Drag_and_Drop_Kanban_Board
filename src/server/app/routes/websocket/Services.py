@@ -62,7 +62,18 @@ class Services():
             print("Error editing task:", e)
         return
     
-    async def delete(self, data, websocket):
+    async def delete(self, data):
+        try:
+            print(data)
+            index = self.database.get_task_by_id(task_id=data["id"])
+            if index:
+                index = index["task_index"]
+            self.database.delete_task(task_id=data["id"])
+            response_data = {"id": data["id"], "index": index}
+            message = {"data": response_data, "type": SendType.Delete.value}
+            await self.manager.broadcast_all(message)
+        except Exception as e:
+            print("Error deleting task:", e)
         return
     
     async def get(self, data, websocket):

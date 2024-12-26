@@ -24,6 +24,7 @@ export enum RecoilKey {
   DataState = "DataState",
   InputState = "InputState",
   WebSocketState = "WebSocketState",
+  ConfirmState = "ConfirmState",
 }
 
 export enum SendType {

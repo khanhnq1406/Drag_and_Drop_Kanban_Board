@@ -3,6 +3,7 @@ import { atom, useRecoilState } from "recoil";
 import { DraggableLocation, DropResult } from "../types/DragDrop.type";
 import Button from "./Button";
 import {
+  API_URL,
   ButtonType,
   ModalType,
   OnClickType,
@@ -21,6 +22,8 @@ import { reorder } from "../utils/reorder";
 import { Initial } from "../api/initial";
 import { inputState, Modal } from "./Modal";
 import { ModalConfig } from "../types/ModalConfig";
+import { ConfirmationBox } from "./ConfirmationBox";
+import { findTaskToUpdate } from "../utils/findTasksToUpdate";
 
 export const dataState = atom({
   key: RecoilKey.DataState,
@@ -40,6 +43,7 @@ const DragDrop: React.FunctionComponent = () => {
   const [dragState, setDragState] = useRecoilState(dragDropState);
   const [socket] = useRecoilState(websocketState);
   const [modal, setModal] = useState(<></>);
+  const [confirm, setConfirm] = useState(<></>);
   const [input, setInput] = useRecoilState(inputState);
   useEffect(() => {
     Initial().then((data) => {
@@ -157,6 +161,48 @@ const DragDrop: React.FunctionComponent = () => {
               });
             }
             setData(updateData);
+          }
+          if (Number(message.type) === Number(SendType.Delete)) {
+            const updateData = {
+              ...data,
+              columns: data.columns.map((column) => ({
+                ...column,
+                tasks: [...column.tasks],
+              })),
+            };
+            const taskWithColumnIndex = updateData.columns
+              .map((column, columnIndex) => ({
+                columnIndex,
+                task: column.tasks.find((task) => task.id === updatedData.id),
+              }))
+              .find((result) => result.task !== undefined);
+            console.log(taskWithColumnIndex);
+            if (taskWithColumnIndex && taskWithColumnIndex.task) {
+              console.log(taskWithColumnIndex);
+              updateData.columns[taskWithColumnIndex.columnIndex].tasks.splice(
+                taskWithColumnIndex.task.index,
+                1
+              );
+              console.log(updateData);
+              const tasksToUpdate = findTaskToUpdate(updateData);
+
+              console.log(tasksToUpdate);
+              fetch(`${API_URL}/updateTasks`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ tasks: tasksToUpdate }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log("Tasks updated successfully:", data);
+                })
+                .catch((error) => {
+                  console.error("Error updating tasks:", error);
+                });
+              setData(updateData);
+            }
           }
         }
       };
@@ -296,8 +342,34 @@ const DragDrop: React.FunctionComponent = () => {
       draggableId: undefined,
     });
   };
+  const handleConfirmation = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    onClickType: OnClickType,
+    id: number
+  ) => {
+    event.preventDefault();
+    switch (onClickType) {
+      case OnClickType.Delete:
+        console.log(id);
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(
+            JSON.stringify({ type: SendType.Delete, data: { id: id } })
+          );
+        }
+        break;
+      case OnClickType.Close:
+        setConfirm(<></>);
+        break;
 
-  const handleModalClick = (event: React.MouseEvent, type: OnClickType) => {
+      default:
+        break;
+    }
+  };
+  const handleModalClick = (
+    event: React.MouseEvent,
+    type: OnClickType,
+    id: number
+  ) => {
     event.preventDefault();
     switch (type) {
       case OnClickType.Close:
@@ -317,16 +389,26 @@ const DragDrop: React.FunctionComponent = () => {
         break;
 
       case OnClickType.Delete:
-        console.log(input);
+        setConfirm(
+          <ConfirmationBox
+            title="Delete ID"
+            message="You're about to permanently delete this work item, its comments and
+          attachments, and all of its data."
+            submessage="If you're not sure, you can resolve or close this work item instead."
+            onConfirm={(event, type) => handleConfirmation(event, type, id)}
+          />
+        );
         break;
 
       default:
         break;
     }
   };
+
   return (
     <>
       <div className="flex gap-5 items-stretch">
+        {confirm}
         {modal}
         {data.columns !== undefined ? (
           data.columns.map((column, index) => (
@@ -373,7 +455,7 @@ const DragDrop: React.FunctionComponent = () => {
                           <Modal
                             type={ModalType.Edit}
                             onClickEvent={(event, type) => {
-                              handleModalClick(event, type);
+                              handleModalClick(event, type, task.id);
                             }}
                             status={String(column.id)}
                             summary={task.content.summary}
@@ -385,7 +467,23 @@ const DragDrop: React.FunctionComponent = () => {
                         );
                       }}
                     />
-                    <Button type={ButtonType.Image} img="delete.png" />
+                    <Button
+                      type={ButtonType.Image}
+                      img="delete.png"
+                      onClick={(e) => {
+                        setConfirm(
+                          <ConfirmationBox
+                            title="Delete ID"
+                            message="You're about to permanently delete this work item, its comments and
+                            attachments, and all of its data."
+                            submessage="If you're not sure, you can resolve or close this work item instead."
+                            onConfirm={(event, type) =>
+                              handleConfirmation(event, type, task.id)
+                            }
+                          />
+                        );
+                      }}
+                    />
                   </div>
                 </div>
               ))}

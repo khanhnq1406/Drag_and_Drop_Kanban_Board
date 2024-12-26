@@ -31,7 +31,7 @@ class WebSocketHandler():
                         await self.service.edit(data)
 
                     if int(type_received) == int(SendType.Delete.value):
-                        await self.service.delete(data, websocket)
+                        await self.service.delete(data)
                     
                     if int(type_received) == int(SendType.Get.value):
                         await self.service.get(data, websocket)

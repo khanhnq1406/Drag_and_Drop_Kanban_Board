@@ -114,4 +114,44 @@ class Database():
             print(f"Database error during edit_task: {e}")
         except Exception as e:
             print(f"Unexpected error during edit_task: {e}")
-        
+    
+    def delete_task(self, task_id: int):
+        try:
+            self.cursor.execute('''
+                DELETE FROM tasks WHERE id = ?''', (task_id,)
+            )
+            self.conn.commit()
+        except sqlite3.Error as e:
+            print(f"Database error during delete_task: {e}")
+        except Exception as e:
+            print(f"Unexpected error during delete_task: {e}")
+
+    def get_task_by_id(self, task_id: int):
+        try:
+            self.cursor.execute(''' 
+                SELECT * FROM tasks WHERE id = ? ''', (task_id,))
+            return self.cursor.fetchone()
+        except sqlite3.Error as e:
+            print(f"Database error during get_task_by_id: {e}")
+        except Exception as e:
+            print(f"Unexpected error during get_task_by_id: {e}")
+    
+    def update_task(self, status_id, task_id, task_index):
+        try:
+            self.cursor.execute('''
+                UPDATE tasks
+                SET status_id = ?,
+                    task_index = ?
+                WHERE id = ?''',
+                (
+                    status_id,
+                    task_index,
+                    task_id
+                ))
+            self.conn.commit()
+        except sqlite3.Error as e:
+            print(f"Database error during update_task: {e}")
+        except Exception as e:
+            print(f"Unexpected error during update_task: {e}")
+
+          

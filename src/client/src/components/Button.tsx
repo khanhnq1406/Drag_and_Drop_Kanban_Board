@@ -28,7 +28,10 @@ const Button: FunctionComponent<config> = ({
       );
     case ButtonType.Danger:
       return (
-        <button className="text-warning border-2 border-warning rounded-md py-1 px-2 hover:shadow-lg">
+        <button
+          className="text-warning border-2 border-warning rounded-md py-1 px-2 hover:shadow-lg"
+          onClick={onClick}
+        >
           {content}
         </button>
       );
