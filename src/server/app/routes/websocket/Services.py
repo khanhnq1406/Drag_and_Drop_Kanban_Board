@@ -11,7 +11,7 @@ class Services():
         message = {"data": data, "from_sender": False, "type": SendType.Update.value}
         await self.manager.broadcast(message, websocket)
 
-    async def create(self, data, websocket):
+    async def create(self, data):
         try:
             task_id = self.database.create_task(
                 Tasks(
@@ -35,7 +35,31 @@ class Services():
             print("Error creating new task:", e)
         return
     
-    async def edit(self, data, websocket):
+    async def edit(self, data):
+        try:
+            print(data)
+            index = self.database.edit_task(Tasks(
+                id=data["id"],
+                status_id=data["status"],
+                task_index=data["taskIndex"],
+                summary=data["summary"],
+                description=data["description"],
+                assignee=data["assignee"]
+            ), has_change_status=data["hasChangeStatus"])
+            print("service index:",index)
+            response_data = {
+                "id": data["id"],
+                "status": data["status"],
+                "index": index,
+                "summary": data["summary"],
+                "description": data["description"],
+                "assignee": data["assignee"],
+                "hasChangeStatus": data["hasChangeStatus"]
+            }
+            message = {"data": response_data, "type": SendType.Edit.value}
+            await self.manager.broadcast_all(message)
+        except Exception as e:
+            print("Error editing task:", e)
         return
     
     async def delete(self, data, websocket):

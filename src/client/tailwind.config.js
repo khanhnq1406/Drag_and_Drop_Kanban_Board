@@ -15,6 +15,7 @@ module.exports = {
         sub: "var(--text-sub)",
         "btn-hover": "var(--btn-hover)",
         "black-layer": "var(--black-layer)",
+        warning: "var(--warning)",
       },
     },
   },

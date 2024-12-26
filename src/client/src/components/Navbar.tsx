@@ -17,13 +17,11 @@ const Navbar: React.FunctionComponent = () => {
     switch (type) {
       case OnClickType.Create:
         setInput((prevInput) => {
-          // TODO: Send data to backend here
           if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(
               JSON.stringify({ type: SendType.Create, data: prevInput })
             );
           }
-          console.log("Send input:", prevInput);
           return prevInput;
         });
         break;

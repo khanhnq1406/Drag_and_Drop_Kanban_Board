@@ -17,7 +17,7 @@ const Button: FunctionComponent<config> = ({
     case ButtonType.Primary:
       return (
         <button
-          className="flex bg-btnPrimary hover:bg-btnPrimary80 text-surface py-1 px-2 rounded-md gap-1 items-center"
+          className="flex bg-btnPrimary hover:bg-btnPrimary80 text-surface py-1 px-2 rounded-md gap-1 items-center hover:shadow-lg"
           onClick={onClick}
         >
           <div className={img !== undefined ? "block" : "hidden"}>
@@ -27,11 +27,15 @@ const Button: FunctionComponent<config> = ({
         </button>
       );
     case ButtonType.Danger:
-      return <button>{content}</button>;
+      return (
+        <button className="text-warning border-2 border-warning rounded-md py-1 px-2 hover:shadow-lg">
+          {content}
+        </button>
+      );
     case ButtonType.Image:
       return (
         <button
-          className="hover:bg-btn-hover hover:rounded-md p-1"
+          className="hover:bg-btn-hover hover:rounded-md p-1 hover:shadow-lg"
           onClick={onClick}
         >
           <img className="w-img-lg" src={img} alt="" />

@@ -2,7 +2,14 @@ import React, { useEffect, useState } from "react";
 import { atom, useRecoilState } from "recoil";
 import { DraggableLocation, DropResult } from "../types/DragDrop.type";
 import Button from "./Button";
-import { ButtonType, RecoilKey, SendType, WS_URL } from "../constants";
+import {
+  ButtonType,
+  ModalType,
+  OnClickType,
+  RecoilKey,
+  SendType,
+  WS_URL,
+} from "../constants";
 import { TaskBoardType } from "../types/DragDrop.type";
 import {
   AddDragEffect,
@@ -12,6 +19,9 @@ import {
 } from "../styles/DragEffect";
 import { reorder } from "../utils/reorder";
 import { Initial } from "../api/initial";
+import { inputState, Modal } from "./Modal";
+import { ModalConfig } from "../types/ModalConfig";
+
 export const dataState = atom({
   key: RecoilKey.DataState,
   default: {} as TaskBoardType,
@@ -28,19 +38,9 @@ export const websocketState = atom<WebSocket>({
 const DragDrop: React.FunctionComponent = () => {
   const [data, setData] = useRecoilState(dataState);
   const [dragState, setDragState] = useRecoilState(dragDropState);
-  // const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [socket, setSocket] = useRecoilState(websocketState);
-  // useEffect(() => {
-  //   const ws = new WebSocket(WS_URL);
-  //   setSocket(ws);
-  //   ws.onclose = () => {
-  //     console.log("WebSocket connection closed");
-  //   };
-  //   ws.onopen = () => {
-  //     console.log("WebSocket connection opened");
-  //   };
-  // }, []);
-
+  const [socket] = useRecoilState(websocketState);
+  const [modal, setModal] = useState(<></>);
+  const [input, setInput] = useRecoilState(inputState);
   useEffect(() => {
     Initial().then((data) => {
       setData(data);
@@ -87,7 +87,75 @@ const DragDrop: React.FunctionComponent = () => {
               }
               return column;
             });
+            setData(updateData);
+          }
+          if (Number(message.type) === Number(SendType.Edit)) {
+            const updateData = {
+              ...data,
+              columns: data.columns.map((column) => ({
+                ...column,
+                tasks: [...column.tasks],
+              })),
+            };
+            if (updatedData.hasChangeStatus) {
+              // Find the old column containing the task
+              const oldColumnIndex = updateData.columns.findIndex((column) =>
+                column.tasks.some((task) => task.id === updatedData.id)
+              );
 
+              if (oldColumnIndex !== -1) {
+                // Remove the task from the old column
+                updateData.columns[oldColumnIndex].tasks = updateData.columns[
+                  oldColumnIndex
+                ].tasks.filter((task) => task.id !== updatedData.id);
+              }
+
+              // Find the index of the new column
+              const newColumnIndex = updateData.columns.findIndex(
+                (column) => Number(column.id) === Number(updatedData.status)
+              );
+
+              if (newColumnIndex !== -1) {
+                // Add the updated task to the new column
+                updateData.columns[newColumnIndex].tasks.push({
+                  id: updatedData.id,
+                  index: updatedData.index,
+                  content: {
+                    assignee: updatedData.assignee,
+                    description: updatedData.description,
+                    summary: updatedData.summary,
+                  },
+                });
+              }
+            } else {
+              const index = data.columns
+                .map(function (o) {
+                  return o.id;
+                })
+                .indexOf(Number(updatedData.status));
+
+              updateData.columns = updateData.columns.map((column) => {
+                if (Number(column.index) === Number(index)) {
+                  return {
+                    ...column,
+                    tasks: column.tasks.map((task) => {
+                      if (task.id === updatedData.id) {
+                        return {
+                          ...task,
+                          content: {
+                            assignee: updatedData.assignee,
+                            description: updatedData.description,
+                            summary: updatedData.summary,
+                          },
+                        };
+                      }
+                      return task;
+                    }),
+                  };
+                }
+                return column;
+              });
+            }
             setData(updateData);
           }
         }
@@ -229,9 +297,37 @@ const DragDrop: React.FunctionComponent = () => {
     });
   };
 
+  const handleModalClick = (event: React.MouseEvent, type: OnClickType) => {
+    event.preventDefault();
+    switch (type) {
+      case OnClickType.Close:
+        setModal(<></>);
+        setInput({} as ModalConfig);
+        break;
+
+      case OnClickType.Edit:
+        setInput((prevInput) => {
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(
+              JSON.stringify({ type: SendType.Edit, data: prevInput })
+            );
+          }
+          return prevInput;
+        });
+        break;
+
+      case OnClickType.Delete:
+        console.log(input);
+        break;
+
+      default:
+        break;
+    }
+  };
   return (
     <>
       <div className="flex gap-5 items-stretch">
+        {modal}
         {data.columns !== undefined ? (
           data.columns.map((column, index) => (
             <div
@@ -267,10 +363,28 @@ const DragDrop: React.FunctionComponent = () => {
                     <p>{task.content.summary}</p>
                     <p className="text-sm">{task.content.assignee}</p>
                     <p>ID-{task.id}</p>
-                    <p>{index}</p>
                   </div>
                   <div className="">
-                    <Button type={ButtonType.Image} img="edit.png" />
+                    <Button
+                      type={ButtonType.Image}
+                      img="edit.png"
+                      onClick={(e) => {
+                        setModal(
+                          <Modal
+                            type={ModalType.Edit}
+                            onClickEvent={(event, type) => {
+                              handleModalClick(event, type);
+                            }}
+                            status={String(column.id)}
+                            summary={task.content.summary}
+                            description={task.content.description}
+                            assignee={task.content.assignee}
+                            id={task.id}
+                            taskIndex={task.index}
+                          />
+                        );
+                      }}
+                    />
                     <Button type={ButtonType.Image} img="delete.png" />
                   </div>
                 </div>

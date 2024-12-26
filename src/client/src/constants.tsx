@@ -16,6 +16,7 @@ export enum OnClickType {
   Edit,
   Close,
   Minimize,
+  Delete,
 }
 
 export enum RecoilKey {

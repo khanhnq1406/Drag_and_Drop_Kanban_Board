@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ButtonType, OnClickType, RecoilKey } from "../constants";
+import { ButtonType, ModalType, OnClickType, RecoilKey } from "../constants";
 import Button from "./Button";
 import { atom, useRecoilState } from "recoil";
 import { ModalConfig } from "../types/ModalConfig";
@@ -16,6 +16,9 @@ export const Modal = ({
   summary,
   description,
   assignee,
+  id,
+  taskIndex,
+  hasChangeStatus,
   onClickEvent,
 }: ModalConfig) => {
   const [input, setInput] = useRecoilState(inputState);
@@ -28,6 +31,9 @@ export const Modal = ({
       summary: summary || prevInput.summary || "",
       description: description || prevInput.description || "",
       assignee: assignee || prevInput.assignee || "",
+      id: Number(id) || Number(prevInput.id) || undefined,
+      taskIndex: taskIndex || prevInput.taskIndex || undefined,
+      hasChangeStatus: hasChangeStatus || prevInput.hasChangeStatus || false,
       onClickEvent,
     }));
   }, []);
@@ -38,11 +44,15 @@ export const Modal = ({
         <div className="flex justify-between">
           <div className="font-bold">Create work item</div>
           <div>
-            <Button
-              type={ButtonType.Image}
-              img="minimize.png"
-              onClick={(e) => onClickEvent(e, OnClickType.Minimize)}
-            />
+            {type === ModalType.Create ? (
+              <Button
+                type={ButtonType.Image}
+                img="minimize.png"
+                onClick={(e) => onClickEvent(e, OnClickType.Minimize)}
+              />
+            ) : (
+              <></>
+            )}
             <Button
               type={ButtonType.Image}
               img="close.png"
@@ -51,7 +61,10 @@ export const Modal = ({
           </div>
         </div>
         <hr className="w-full h-1 bg-column border-none rounded my-3" />
-        <form className="flex flex-wrap gap-2">
+        <form
+          className="flex flex-wrap gap-2"
+          onSubmit={(e) => e.preventDefault()}
+        >
           <label className="w-full text-sub font-semibold">Status</label>
 
           <select
@@ -62,6 +75,7 @@ export const Modal = ({
                 return {
                   ...prevInput,
                   status: e.target.value,
+                  hasChangeStatus: true,
                 };
               })
             }
@@ -118,9 +132,29 @@ export const Modal = ({
           ></input>
           <Button
             type={ButtonType.Primary}
-            content="Create"
-            onClick={(e) => onClickEvent(e, OnClickType.Create)}
+            content={type === ModalType.Create ? "Create" : "Save"}
+            onClick={(e) => {
+              e.preventDefault();
+              onClickEvent(
+                e,
+                type === ModalType.Create
+                  ? OnClickType.Create
+                  : OnClickType.Edit
+              );
+            }}
           />
+          {type === ModalType.Edit ? (
+            <Button
+              type={ButtonType.Danger}
+              content="Delete"
+              onClick={(e) => {
+                e.preventDefault();
+                onClickEvent(e, OnClickType.Delete);
+              }}
+            ></Button>
+          ) : (
+            <></>
+          )}
         </form>
       </div>
     </div>

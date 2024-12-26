@@ -69,9 +69,9 @@ class Database():
 
     def get(self):
         status = self.cursor.execute('''
-                    SELECT * FROM status
-                    ORDER BY status_index
-                ''').fetchall()
+            SELECT * FROM status
+            ORDER BY status_index
+        ''').fetchall()
 
         tasks = self.cursor.execute('''
             SELECT * FROM tasks
@@ -80,4 +80,38 @@ class Database():
         status_result = [dict(row) for row in status]
         tasks_result = [dict(row) for row in tasks]
         return {"data": {"status":status_result, "tasks" : tasks_result}}
+    
+    def edit_task(self, task: Tasks, has_change_status: bool | None):
+        try:
+            print(has_change_status)
+            index = task.task_index
+            print("Before index: ", index)
+            if has_change_status:
+                index = len(self.cursor.execute(
+                "SELECT * FROM tasks WHERE status_id = ?", (task.status_id,)).fetchall())
+                print("Changed index: ", index)
+            self.cursor.execute('''
+                UPDATE tasks
+                SET summary = ?,
+                    description = ?,
+                    assignee = ?,
+                    status_id = ?,
+                    task_index = ?
+                WHERE id = ?''',
+                (
+                    task.summary,
+                    task.description, 
+                    task.assignee,
+                    task.status_id,
+                    index,
+                    task.id
+                )
+            )
+            print("After index: ", index)
+            self.conn.commit()
+            return index
+        except sqlite3.Error as e:
+            print(f"Database error during edit_task: {e}")
+        except Exception as e:
+            print(f"Unexpected error during edit_task: {e}")
         

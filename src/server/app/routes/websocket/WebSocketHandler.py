@@ -25,10 +25,10 @@ class WebSocketHandler():
                         await self.service.update(data, websocket)
 
                     if int(type_received) == int(SendType.Create.value):
-                        await self.service.create(data, websocket)
+                        await self.service.create(data)
 
                     if int(type_received) == int(SendType.Edit.value):
-                        await self.service.edit(data, websocket)
+                        await self.service.edit(data)
 
                     if int(type_received) == int(SendType.Delete.value):
                         await self.service.delete(data, websocket)
