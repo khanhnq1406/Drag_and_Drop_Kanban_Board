@@ -32,4 +32,10 @@ export type DropResult = {
   draggableId?: number;
 };
 
+export type ColDropResult = {
+  colDestination?: DraggableLocation;
+  colSource?: DraggableLocation;
+  colDraggableId?: number;
+};
+
 export type handleDragEnd = (result: DropResult) => void;

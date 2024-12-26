@@ -21,6 +21,7 @@ export enum OnClickType {
 
 export enum RecoilKey {
   DragDropState = "DragDropState",
+  ColumnDragDropState = "ColumnDragDropState",
   DataState = "DataState",
   InputState = "InputState",
   WebSocketState = "WebSocketState",

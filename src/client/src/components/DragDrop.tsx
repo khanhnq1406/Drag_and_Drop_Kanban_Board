@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { atom, useRecoilState } from "recoil";
-import { DraggableLocation, DropResult } from "../types/DragDrop.type";
+import {
+  ColDropResult,
+  DraggableLocation,
+  DropResult,
+} from "../types/DragDrop.type";
 import Button from "./Button";
 import {
   API_URL,
@@ -25,6 +29,14 @@ import { ModalConfig } from "../types/ModalConfig";
 import { ConfirmationBox } from "./ConfirmationBox";
 import { findTaskToUpdate } from "../utils/findTasksToUpdate";
 import { Input } from "./Input";
+import {
+  handleColumnDragLeave,
+  handleColumnDragOver,
+} from "../utils/handleColumnDragDrop";
+import {
+  RemoveDragColumnEffect,
+  RemoveLastColumnEffect,
+} from "../styles/ColumnDragEffect";
 
 export const dataState = atom({
   key: RecoilKey.DataState,
@@ -35,6 +47,11 @@ const dragDropState = atom({
   key: RecoilKey.DragDropState,
   default: {} as DropResult,
 });
+
+const columnDragDropState = atom({
+  key: RecoilKey.ColumnDragDropState,
+  default: {} as ColDropResult,
+});
 export const websocketState = atom<WebSocket>({
   key: RecoilKey.WebSocketState,
   default: new WebSocket(WS_URL),
@@ -42,6 +59,8 @@ export const websocketState = atom<WebSocket>({
 const DragDrop: React.FunctionComponent = () => {
   const [data, setData] = useRecoilState(dataState);
   const [dragState, setDragState] = useRecoilState(dragDropState);
+  const [columnDragState, setColumnDragState] =
+    useRecoilState(columnDragDropState);
   const [socket] = useRecoilState(websocketState);
   const [modal, setModal] = useState(<></>);
   const [confirm, setConfirm] = useState(<></>);
@@ -50,6 +69,7 @@ const DragDrop: React.FunctionComponent = () => {
     state: false,
     column: -1,
   });
+  const [isDraggingTask, setDraggingTask] = useState(false);
   useEffect(() => {
     Initial().then((data) => {
       setData(data);
@@ -220,6 +240,8 @@ const DragDrop: React.FunctionComponent = () => {
     source: DraggableLocation,
     draggableId: number
   ) => {
+    setDraggingTask(true);
+    console.log(source);
     setDragState({
       source: source,
       draggableId: draggableId,
@@ -235,6 +257,7 @@ const DragDrop: React.FunctionComponent = () => {
     } else {
       RemoveDragEffect(event);
     }
+    console.log(destination);
     setDragState((prevDragState) => ({
       ...prevDragState,
       destination: destination,
@@ -259,9 +282,12 @@ const DragDrop: React.FunctionComponent = () => {
     }
   };
 
+  useEffect(() => {
+    console.log("Drag state changes", dragState);
+  }, [dragState]);
   const handleDragEnd = (event: React.DragEvent) => {
     const { destination, source, draggableId } = dragState;
-
+    console.log(dragState);
     if (!source) {
       return;
     }
@@ -278,6 +304,7 @@ const DragDrop: React.FunctionComponent = () => {
     ) {
       return;
     }
+    console.log("Debug: ", dragState);
 
     if (source?.droppableId === destination?.droppableId) {
       // moving to same list
@@ -286,7 +313,7 @@ const DragDrop: React.FunctionComponent = () => {
         source.index,
         destination.index
       );
-
+      console.log("updatedTasks:", updatedTasks);
       const updatedColumns = data.columns.map((column, index) => {
         if (index === source.droppableId - 1) {
           return {
@@ -296,6 +323,7 @@ const DragDrop: React.FunctionComponent = () => {
         }
         return column;
       });
+      console.log(updatedColumns);
 
       setData((prevData) => ({
         ...prevData,
@@ -342,6 +370,116 @@ const DragDrop: React.FunctionComponent = () => {
       draggableId: undefined,
     });
   };
+
+  const handleDragColumnStart = (
+    event: React.DragEvent,
+    source: DraggableLocation,
+    draggableId: number
+  ) => {
+    console.log("handleDragColumnStart:", source);
+
+    setColumnDragState({
+      colSource: source,
+      colDraggableId: draggableId,
+    });
+  };
+
+  const handleColumnOnDrop = (
+    event: React.DragEvent,
+    destination: DraggableLocation
+  ) => {
+    RemoveDragColumnEffect(event);
+    console.log("handleColumnOnDrop:", destination);
+
+    setColumnDragState((prevDragState) => ({
+      ...prevDragState,
+      colDestination: destination,
+    }));
+  };
+
+  const handleDragColumnEnd = (event: React.DragEvent) => {
+    if (isDraggingTask) {
+      setDraggingTask(false);
+      setColumnDragState({
+        colSource: undefined,
+        colDestination: undefined,
+        colDraggableId: undefined,
+      });
+      return;
+    }
+    const { colDestination, colSource, colDraggableId } = columnDragState;
+    console.log({ colDestination, colSource, colDraggableId });
+
+    if (!colSource) {
+      return;
+    }
+
+    // dropped nowhere
+    if (!colDestination) {
+      return;
+    }
+
+    // did not move anywhere
+    if (
+      colSource?.droppableId === colDestination?.droppableId &&
+      colSource.index === colDestination.index
+    ) {
+      return;
+    }
+
+    const originalColumns = Array.from(data.columns);
+    const updatedColumns = Array.from(data.columns);
+    const [removedColumn] = updatedColumns.splice(colSource.index, 1);
+    updatedColumns.splice(colDestination.index, 0, removedColumn);
+
+    originalColumns
+      .map((column, index) => {
+        const newIndex = updatedColumns.findIndex(
+          (col) => col.id === column.id
+        );
+        if (newIndex !== index) {
+          const newColumn = {
+            id: column.id,
+            title: column.title,
+            index: newIndex,
+          };
+          fetch(`${API_URL}/updateStatus`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newColumn),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Tasks created successfully:", data);
+              setColumnDragState({
+                colSource: undefined,
+                colDestination: undefined,
+                colDraggableId: undefined,
+              });
+            })
+            .catch((error) => {
+              console.error("Error creating tasks:", error);
+            });
+          return newColumn;
+        }
+        return null;
+      })
+      .filter((change) => change !== null);
+
+    setData((prevData) => ({
+      ...prevData,
+      columns: updatedColumns,
+    }));
+
+    setColumnDragState({
+      colSource: undefined,
+      colDestination: undefined,
+      colDraggableId: undefined,
+    });
+  };
+
   const handleConfirmation = (
     event: React.MouseEvent<HTMLButtonElement>,
     onClickType: OnClickType,
@@ -458,7 +596,27 @@ const DragDrop: React.FunctionComponent = () => {
           data.columns.map((column, index) => (
             <div
               key={index}
-              className="h-full bg-column p-2 rounded-lg flex-1 min-w-[250px] max-w-[400px]"
+              className="h-full bg-column p-2 rounded-lg flex-1 min-w-[250px] max-w-[400px] border-r-0 border-r-btnPrimary"
+              draggable
+              onDragOver={(e) => handleColumnDragOver(e, column.index)}
+              onDragLeave={(e) => handleColumnDragLeave(e, column.index)}
+              onDragStart={(e) =>
+                handleDragColumnStart(
+                  e,
+                  {
+                    droppableId: column.id,
+                    index: column.index,
+                  },
+                  column.id
+                )
+              }
+              onDragEnd={handleDragColumnEnd}
+              onDrop={(e) =>
+                handleColumnOnDrop(e, {
+                  droppableId: column.id,
+                  index: column.index,
+                })
+              }
             >
               <div className="flex justify-between">
                 {!columnSetting.state ||
