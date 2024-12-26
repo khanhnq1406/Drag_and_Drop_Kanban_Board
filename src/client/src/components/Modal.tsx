@@ -32,7 +32,7 @@ export const Modal = ({
       description: description || prevInput.description || "",
       assignee: assignee || prevInput.assignee || "",
       id: Number(id) || Number(prevInput.id) || undefined,
-      taskIndex: taskIndex || prevInput.taskIndex || undefined,
+      taskIndex: taskIndex ?? prevInput.taskIndex ?? undefined,
       hasChangeStatus: hasChangeStatus || prevInput.hasChangeStatus || false,
       onClickEvent,
     }));
