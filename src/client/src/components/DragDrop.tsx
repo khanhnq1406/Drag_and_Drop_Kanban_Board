@@ -184,24 +184,9 @@ const DragDrop: React.FunctionComponent = () => {
                 1
               );
               console.log(updateData);
-              const tasksToUpdate = findTaskToUpdate(updateData);
-
-              console.log(tasksToUpdate);
-              fetch(`${API_URL}/updateTasks`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ tasks: tasksToUpdate }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  console.log("Tasks updated successfully:", data);
-                })
-                .catch((error) => {
-                  console.error("Error updating tasks:", error);
-                });
+              findTaskToUpdate(updateData);
               setData(updateData);
+              setConfirm(<></>);
             }
           }
         }
@@ -212,6 +197,16 @@ const DragDrop: React.FunctionComponent = () => {
   useEffect(() => {
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({ type: SendType.Update, data: data }));
+      if (data.columns) {
+        const updateData = {
+          ...data,
+          columns: data.columns.map((column) => ({
+            ...column,
+            tasks: [...column.tasks],
+          })),
+        };
+        findTaskToUpdate(updateData);
+      }
     }
   }, [data]);
 

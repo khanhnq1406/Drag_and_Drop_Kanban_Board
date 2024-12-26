@@ -75,7 +75,7 @@ class Database():
 
         tasks = self.cursor.execute('''
             SELECT * FROM tasks
-            ORDER BY status_id
+            ORDER BY status_id, task_index
         ''').fetchall()
         status_result = [dict(row) for row in status]
         tasks_result = [dict(row) for row in tasks]

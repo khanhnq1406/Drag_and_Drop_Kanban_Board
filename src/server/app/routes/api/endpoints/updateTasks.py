@@ -21,4 +21,4 @@ def update(update_data: UpdateTasksRequest):
     database = Database()
     for update in update_data.tasks:
         database.update_task(update.columnId, update.taskId, update.realIndex)
-    return {}
+    return {"updated": update_data}
