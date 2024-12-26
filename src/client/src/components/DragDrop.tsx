@@ -24,6 +24,7 @@ import { inputState, Modal } from "./Modal";
 import { ModalConfig } from "../types/ModalConfig";
 import { ConfirmationBox } from "./ConfirmationBox";
 import { findTaskToUpdate } from "../utils/findTasksToUpdate";
+import { Input } from "./Input";
 
 export const dataState = atom({
   key: RecoilKey.DataState,
@@ -45,6 +46,10 @@ const DragDrop: React.FunctionComponent = () => {
   const [modal, setModal] = useState(<></>);
   const [confirm, setConfirm] = useState(<></>);
   const [input, setInput] = useRecoilState(inputState);
+  const [columnSetting, setColumnSetting] = useState({
+    state: false,
+    column: -1,
+  });
   useEffect(() => {
     Initial().then((data) => {
       setData(data);
@@ -386,7 +391,7 @@ const DragDrop: React.FunctionComponent = () => {
       case OnClickType.Delete:
         setConfirm(
           <ConfirmationBox
-            title="Delete ID"
+            title={`Delete ID-${id}`}
             message="You're about to permanently delete this work item, its comments and
           attachments, and all of its data."
             submessage="If you're not sure, you can resolve or close this work item instead."
@@ -400,6 +405,50 @@ const DragDrop: React.FunctionComponent = () => {
     }
   };
 
+  const handleRemoveStatus = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    onClickType: OnClickType,
+    id: number
+  ) => {
+    event.preventDefault();
+    switch (onClickType) {
+      case OnClickType.Delete:
+        fetch(`${API_URL}/deleteStatus`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id: id }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Tasks created successfully:", data);
+          })
+          .catch((error) => {
+            console.error("Error creating tasks:", error);
+          });
+        const updateData = {
+          ...data,
+          columns: data.columns.map((column) => ({
+            ...column,
+            tasks: [...column.tasks],
+          })),
+        };
+        const newData = {
+          ...updateData,
+          columns: updateData.columns.filter((column) => column.id !== id),
+        };
+        setData(newData);
+        setConfirm(<></>);
+        break;
+      case OnClickType.Close:
+        setConfirm(<></>);
+        break;
+
+      default:
+        break;
+    }
+  };
   return (
     <>
       <div className="flex gap-5 items-stretch">
@@ -409,9 +458,52 @@ const DragDrop: React.FunctionComponent = () => {
           data.columns.map((column, index) => (
             <div
               key={index}
-              className="h-full bg-column p-2 rounded-lg flex-1 min-w-[250px]"
+              className="h-full bg-column p-2 rounded-lg flex-1 min-w-[250px] max-w-[400px]"
             >
-              <div className="text-sub font-semibold">{column.title}</div>
+              <div className="flex justify-between">
+                {!columnSetting.state ||
+                columnSetting.column != column.index ? (
+                  <>
+                    <div className="text-sub font-semibold">{column.title}</div>
+                    <div>
+                      <Button
+                        type={ButtonType.Image}
+                        img="edit.png"
+                        onClick={(e) =>
+                          setColumnSetting({
+                            state: true,
+                            column: column.index,
+                          })
+                        }
+                      />
+                      <Button
+                        type={ButtonType.Image}
+                        img="delete.png"
+                        onClick={(e) =>
+                          setConfirm(
+                            <ConfirmationBox
+                              title={`Delete column ${column.title}`}
+                              message="You're about to permanently delete this column, tasks in it, and all of its data."
+                              submessage="If you're not sure, you can resolve or close this work item instead."
+                              onConfirm={(event, type) =>
+                                handleRemoveStatus(event, type, column.id)
+                              }
+                            />
+                          )
+                        }
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <Input
+                    index={column.index}
+                    value={column.title}
+                    id={column.id}
+                    title={column.title}
+                    setColumnSetting={setColumnSetting}
+                  />
+                )}
+              </div>
               {column.tasks.map((task, index) => (
                 <div
                   draggable="true"
@@ -468,7 +560,7 @@ const DragDrop: React.FunctionComponent = () => {
                       onClick={(e) => {
                         setConfirm(
                           <ConfirmationBox
-                            title="Delete ID"
+                            title={`Delete ID-${task.id}`}
                             message="You're about to permanently delete this work item, its comments and
                             attachments, and all of its data."
                             submessage="If you're not sure, you can resolve or close this work item instead."
@@ -498,6 +590,20 @@ const DragDrop: React.FunctionComponent = () => {
           ))
         ) : (
           <div>Loading</div>
+        )}
+
+        {columnSetting.state && columnSetting.column === -1 ? (
+          <div className="min-w-[250px]">
+            <Input setColumnSetting={setColumnSetting} />
+          </div>
+        ) : (
+          <div>
+            <Button
+              type={ButtonType.Image}
+              img="plus.png"
+              onClick={(e) => setColumnSetting({ state: true, column: -1 })}
+            />
+          </div>
         )}
       </div>
     </>

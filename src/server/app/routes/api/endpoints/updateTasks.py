@@ -1,17 +1,7 @@
 from fastapi import APIRouter, status
 router = APIRouter()
 from app.db.Database import Database
-from pydantic import BaseModel
-
-from typing import List
-
-class Task(BaseModel):
-    columnId: int
-    taskId: int
-    realIndex: int
-
-class UpdateTasksRequest(BaseModel):
-    tasks: List[Task]
+from app.models.Tasks import UpdateTasksRequest
 
 
 
