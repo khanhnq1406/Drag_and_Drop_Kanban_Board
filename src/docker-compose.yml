@@ -22,6 +22,8 @@ services:
     image: kanban-board-client
     container_name: kanban-board-client
     command: yarn start
+    depends_on:
+      - server
     volumes:
       - ./client/:/usr/src/app
       - /usr/src/app/node_modules
