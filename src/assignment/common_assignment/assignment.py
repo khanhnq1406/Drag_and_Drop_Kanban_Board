@@ -8,6 +8,7 @@ class CommonAssignment:
         return random.choice([0, 1])
     
     def get_random(self, n) -> int:
+        assert n >= 0, "Invalid Input"
         if n == 0:
             return 0
         while True:
