@@ -131,3 +131,7 @@ dist
 
 *:Zone.Identifier
 .vscode
+
+.venv
+.pytest_cache
+__pycache__
